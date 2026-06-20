@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -65,10 +66,54 @@ class DownloadRecord {
 class DownloadService extends ChangeNotifier {
   static final DownloadService instance = DownloadService._();
   
-  DownloadService._();
-  
   final Dio _dio = Dio();
   final List<DownloadRecord> _downloads = [];
+  bool _loaded = false;
+
+  DownloadService._() {
+    _loadDownloads();
+  }
+
+  Future<void> _loadDownloads() async {
+    if (_loaded) return;
+    try {
+      final box = Hive.box('settings');
+      final saved = box.get('download_records');
+      if (saved != null && saved is List) {
+        for (final item in saved) {
+          try {
+            final map = Map<String, dynamic>.from(item);
+            _downloads.add(DownloadRecord(
+              id: map['id'] ?? '',
+              url: map['url'] ?? '',
+              fileName: map['fileName'] ?? '',
+              savePath: map['savePath'] ?? '',
+              status: DownloadStatus.values.firstWhere(
+                (e) => e.name == (map['status'] ?? 'completed'),
+                orElse: () => DownloadStatus.completed,
+              ),
+              createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+              completedAt: DateTime.tryParse(map['completedAt'] ?? ''),
+              progress: (map['progress'] ?? 0).toDouble(),
+            ));
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
+    _loaded = true;
+  }
+
+  void _persist() {
+    try {
+      final box = Hive.box('settings');
+      box.put('download_records', _downloads.map((d) => {
+        'id': d.id, 'url': d.url, 'fileName': d.fileName, 'savePath': d.savePath,
+        'status': d.status.name, 'createdAt': d.createdAt.toIso8601String(),
+        'completedAt': d.completedAt?.toIso8601String(),
+        'progress': d.progress, 'fileSize': d.fileSize,
+      }).toList());
+    } catch (_) {}
+  }
   
   /// 下载目录
   String _downloadPath = '';
@@ -201,6 +246,7 @@ class DownloadService extends ChangeNotifier {
     
     _downloads.add(record);
     notifyListeners();
+    _persist();
     
     // 开始下载
     _downloadFile(record);
@@ -216,6 +262,7 @@ class DownloadService extends ChangeNotifier {
       if (index != -1) {
         _downloads[index] = record.copyWith(status: DownloadStatus.downloading);
         notifyListeners();
+    _persist();
       }
       
       // 发送请求获取文件信息
@@ -232,6 +279,7 @@ class DownloadService extends ChangeNotifier {
                 fileSize: total,
               );
               notifyListeners();
+    _persist();
             }
           }
         },
@@ -251,6 +299,7 @@ class DownloadService extends ChangeNotifier {
           completedAt: DateTime.now(),
         );
         notifyListeners();
+    _persist();
       }
     } catch (e) {
       // 下载失败
@@ -260,6 +309,7 @@ class DownloadService extends ChangeNotifier {
           status: DownloadStatus.failed,
         );
         notifyListeners();
+    _persist();
       }
       if (kDebugMode) print('[DownloadService] 下载失败: $e');
     }
@@ -285,6 +335,7 @@ class DownloadService extends ChangeNotifier {
     if (index != -1) {
       _downloads.removeAt(index);
       notifyListeners();
+    _persist();
     }
   }
   
@@ -292,5 +343,6 @@ class DownloadService extends ChangeNotifier {
   void deleteDownload(String id) {
     _downloads.removeWhere((d) => d.id == id);
     notifyListeners();
+    _persist();
   }
 }
