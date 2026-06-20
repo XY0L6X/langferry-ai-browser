@@ -13,6 +13,7 @@ class UrlBar extends StatelessWidget {
   final VoidCallback onTabPressed;
   final VoidCallback onClearPressed;
   final int tabCount;
+  final String? searchIcon;
 
   const UrlBar({
     super.key,
@@ -25,6 +26,7 @@ class UrlBar extends StatelessWidget {
     required this.onTabPressed,
     required this.onClearPressed,
     required this.tabCount,
+    this.searchIcon,
   });
 
   @override
@@ -73,14 +75,16 @@ class UrlBar extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        // 搜索图标
+                        // 搜索引擎图标
                         Padding(
                           padding: const EdgeInsets.only(left: AppDimens.spacing12),
-                          child: Icon(
-                            Icons.search,
-                            size: AppDimens.iconSizeSmall,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                          child: searchIcon != null
+                              ? Text(searchIcon!, style: const TextStyle(fontSize: 16))
+                              : Icon(
+                                  Icons.search,
+                                  size: AppDimens.iconSizeSmall,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                         ),
                         // 搜索/地址输入框
                         Expanded(

@@ -665,6 +665,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               onTabPressed: _showTabManager,
               onClearPressed: _goToHomePage,
               tabCount: _tabs.length,
+              searchIcon: SearchEngine.findById(ref.watch(searchEngineProvider)).icon,
             ),
             if (_tabs.length > 1)
               TabBarWidget(
