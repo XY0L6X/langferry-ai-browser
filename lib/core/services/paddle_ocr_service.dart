@@ -105,8 +105,11 @@ class PaddleOcrService {
 
   /// 下载并解析 OCR 结果
   Future<List<OcrPage>> fetchResults(String jsonlUrl) async {
-    final response = await _dio.get(jsonlUrl);
-    final lines = response.data.toString().trim().split('\n');
+    final response = await _dio.get(
+      jsonlUrl,
+      options: Options(responseType: ResponseType.plain),
+    );
+    final lines = (response.data as String).trim().split('\n');
     final pages = <OcrPage>[];
 
     for (var i = 0; i < lines.length; i++) {
