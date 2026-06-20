@@ -66,7 +66,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('开始下载: ${url.split('/').last}'),
+            content: Text('开始下载: ${Uri.parse(url).pathSegments.isNotEmpty ? Uri.parse(url).pathSegments.last : url}'),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -75,7 +75,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('下载失败: $e'),
+            content: Text('下载失败: ${e.toString().length > 50 ? '${e.toString().substring(0, 50)}...' : e}'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

@@ -279,15 +279,17 @@ class DownloadService extends ChangeNotifier {
                 fileSize: total,
               );
               notifyListeners();
-    _persist();
+              _persist();
             }
           }
         },
         options: Options(
-          headers: {
-            'Accept': '*/*',
-          },
+          headers: {'Accept': '*/*'},
+          followRedirects: true,
+          maxRedirects: 5,
+          receiveTimeout: const Duration(seconds: 120),
         ),
+        deleteOnError: true,
       );
       
       // 下载完成
