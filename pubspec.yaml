@@ -1,0 +1,64 @@
+name: langferry
+description: 文渡 LangFerry - AI 翻译浏览器，以文字为舟渡语言之河
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  
+  # 状态管理
+  flutter_riverpod: ^2.5.0
+  riverpod_annotation: ^2.3.0
+  
+  # 网络请求
+  dio: ^5.4.0
+  
+  # WebView
+  flutter_inappwebview: ^6.0.0
+  
+  # 本地存储
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # 工具类
+  intl: ^0.20.2
+  uuid: ^4.2.1
+  crypto: ^3.0.3
+  
+  # UI相关
+  flutter_svg: ^2.0.9
+  
+  # 路径和分享
+  path_provider: ^2.1.1
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.1
+  permission_handler: ^11.0.0
+  
+  # 字体
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  
+  # 代码生成
+  build_runner: ^2.4.6
+  hive_generator: ^2.0.1
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/js/
