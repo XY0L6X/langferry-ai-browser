@@ -73,21 +73,30 @@ class UrlBar extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        // URL输入框
+                        // 搜索图标
+                        Padding(
+                          padding: const EdgeInsets.only(left: AppDimens.spacing12),
+                          child: Icon(
+                            Icons.search,
+                            size: AppDimens.iconSizeSmall,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        // 搜索/地址输入框
                         Expanded(
                           child: TextField(
                             controller: controller,
                             focusNode: focusNode,
                             style: theme.textTheme.bodyMedium,
                             decoration: InputDecoration(
-                              hintText: AppStrings.urlHint,
+                              hintText: '搜索网页',
                               hintStyle: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface.withOpacity(0.35),
                               ),
                               border: InputBorder.none,
                               filled: false,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: AppDimens.spacing12,
+                                horizontal: AppDimens.spacing8,
                                 vertical: 0,
                               ),
                             ),
