@@ -134,19 +134,44 @@ class _DocumentPageState extends ConsumerState<DocumentPage> {
 
   Future<void> _startTranslation() async {
     if (_originalTexts.isEmpty) return;
+    if (!mounted) return;
+    
     setState(() => _isProcessing = true);
+    
+    final config = ref.read(activeApiConfigProvider);
+    if (config == null) {
+      setState(() {
+        _status = '错误：请先在设置中配置翻译 API';
+        _isProcessing = false;
+      });
+      return;
+    }
+
     final ts = ref.read(translationServiceProvider);
     _translatedTexts = [];
+
     for (var i = 0; i < _originalTexts.length; i++) {
+      if (!mounted) return;
+      setState(() => _status = '翻译中... ${i + 1}/${_originalTexts.length} 段');
+      
       try {
-        final result = await ts.translate(text: _originalTexts[i], targetLanguage: 'zh-CN', useCache: true);
+        final text = _originalTexts[i];
+        // 限制单段长度，超长文本先截断
+        final limited = text.length > 3000 ? text.substring(0, 3000) : text;
+        final result = await ts.translate(
+          text: limited,
+          targetLanguage: 'zh-CN',
+          useCache: true,
+        ).timeout(const Duration(seconds: 60));
         _translatedTexts.add(result.translatedText);
       } catch (e) {
-        _translatedTexts.add('翻译失败: $e');
+        _translatedTexts.add('翻译超时或失败: ${e.toString().substring(0, 50)}');
       }
-      if (mounted) setState(() => _status = '翻译中... ${i + 1}/${_originalTexts.length}');
     }
-    setState(() { _isProcessing = false; _status = '翻译完成'; });
+    
+    if (mounted) {
+      setState(() { _isProcessing = false; _status = '翻译完成'; });
+    }
   }
 
   Future<void> _exportResult() async {
