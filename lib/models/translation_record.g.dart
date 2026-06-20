@@ -24,7 +24,7 @@ class TranslationRecordAdapter extends TypeAdapter<TranslationRecord> {
       translatedText: fields[4] as String,
       sourceLanguage: fields[5] as String,
       targetLanguage: fields[6] as String,
-      createdAt: fields[7] as DateTime,
+      createdAt: fields[7] as DateTime?,
       isFavorite: fields[8] as bool,
       favoriteCategory: fields[9] as String?,
       apiName: fields[10] as String?,

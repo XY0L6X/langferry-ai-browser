@@ -23,7 +23,7 @@ class ApiConfigAdapter extends TypeAdapter<ApiConfig> {
       model: fields[3] as String,
       systemPrompt: fields[4] as String?,
       isActive: fields[5] as bool,
-      createdAt: fields[6] as DateTime,
+      createdAt: fields[6] as DateTime?,
       lastUsedAt: fields[7] as DateTime?,
     );
   }

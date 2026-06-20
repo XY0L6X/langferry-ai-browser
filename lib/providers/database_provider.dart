@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/database_service.dart';
+import 'usage_provider.dart';
 import '../models/api_config.dart';
 import '../models/translation_record.dart';
 import '../models/favorite_item.dart';
+import '../models/usage_record.dart';
 
 /// 数据库服务提供者
 final databaseServiceProvider = Provider<DatabaseService>((ref) {
@@ -192,3 +194,10 @@ class TranslationCacheService {
     await _database.clearTranslationCache();
   }
 }
+
+// ==================== 用量追踪 ====================
+
+final usageTrackerProvider = Provider<UsageTracker>((ref) {
+  final database = ref.watch(databaseServiceProvider);
+  return UsageTracker(database);
+});

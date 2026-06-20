@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/api_config.dart';
 import '../../models/translation_record.dart';
 import '../../models/favorite_item.dart';
+import '../../models/usage_record.dart';
 import '../constants/app_strings.dart';
 
 /// 数据库服务
@@ -23,6 +24,7 @@ class DatabaseService {
     Hive.registerAdapter(ApiConfigAdapter());
     Hive.registerAdapter(TranslationRecordAdapter());
     Hive.registerAdapter(FavoriteItemAdapter());
+    Hive.registerAdapter(UsageRecordAdapter());
     
     // 打开Box
     await Hive.openBox<ApiConfig>(AppStrings.boxApiConfigs);
@@ -30,6 +32,7 @@ class DatabaseService {
     await Hive.openBox<FavoriteItem>(AppStrings.boxFavorites);
     await Hive.openBox(AppStrings.boxSettings);
     await Hive.openBox(AppStrings.boxTranslationCache);
+    await Hive.openBox<UsageRecord>('usage_records');
     
     _isInitialized = true;
   }
@@ -267,5 +270,21 @@ class DatabaseService {
     await _favoritesBox.clear();
     await _settingsBox.clear();
     await _cacheBox.clear();
+  }
+
+  // ==================== 用量记录 ====================
+
+  Box<UsageRecord> get _usageBox => Hive.box<UsageRecord>('usage_records');
+
+  Future<void> saveUsageRecord(UsageRecord record) async {
+    await _usageBox.put(record.id, record);
+  }
+
+  List<UsageRecord> getAllUsageRecords() {
+    return _usageBox.values.toList();
+  }
+
+  Future<void> clearUsageRecords() async {
+    await _usageBox.clear();
   }
 }

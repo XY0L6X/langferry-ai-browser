@@ -9,6 +9,7 @@ import '../../models/search_engine.dart';
 import '../../core/services/log_service.dart';
 import '../debug/debug_console_page.dart';
 import 'widgets/api_config_page.dart';
+import 'usage_ledger_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -167,6 +168,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   );
                 },
+              ),
+              ListTile(
+                leading: const Icon(Icons.receipt_long),
+                title: const Text('消费明细'),
+                subtitle: const Text('查看 API 翻译费用记录'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UsageLedgerPage())),
               ),
               ListTile(
                 leading: const Icon(Icons.bug_report),
