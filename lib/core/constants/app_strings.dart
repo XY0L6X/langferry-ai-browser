@@ -4,7 +4,7 @@ class AppStrings {
   AppStrings._();
   
   // ==================== 应用信息 ====================
-  static const String appName = 'WebLingo';
+  static const String appName = '文渡';
   static const String appVersion = '1.0.0';
   static const String appDescription = 'AI翻译浏览器';
   

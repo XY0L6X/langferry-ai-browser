@@ -148,5 +148,5 @@
     window.getPageTitle = getPageTitle;
     window.getPageLanguage = getPageLanguage;
     
-    console.log('[WebLingo] 文本提取脚本已加载');
+    console.log('[LangFerry] 文本提取脚本已加载');
 })();

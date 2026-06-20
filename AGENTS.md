@@ -1,11 +1,11 @@
-# WebLingo — AI翻译浏览器
+# 文渡 LangFerry — AI翻译浏览器
 
 基于 Flutter 的安卓翻译浏览器，通过 WebView 加载网页并使用 DeepSeek/Mimo/OpenAI 兼容 API 进行全文翻译。
 
 ## Project
 
 - **技术栈**: Flutter 3.22+, Dart 3.2+, Material 3, Riverpod 2.x, Hive, flutter_inappwebview 6.x, Dio 5.x
-- **入口**: `lib/main.dart` → `ProviderScope` → `WebLingoApp` → `MainPage`
+- **入口**: `lib/main.dart` → `ProviderScope` → `文渡 LangFerryApp` → `MainPage`
 - **目标平台**: Android (minSdk 31 / Android 12), 理论上支持 iOS/Desktop
 - **版本**: 1.0.0+1 (MIT License)
 

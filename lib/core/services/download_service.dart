@@ -79,7 +79,7 @@ class DownloadService extends ChangeNotifier {
     
     if (Platform.isAndroid) {
       // 优先尝试公共下载目录
-      final publicDownload = '/storage/emulated/0/Download/WebLingo';
+      final publicDownload = '/storage/emulated/0/Download/LangFerry';
       try {
         final dir = Directory(publicDownload);
         if (!await dir.exists()) {

@@ -1,3 +1,11 @@
+import java.util.Properties
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -18,6 +26,17 @@ android {
         jvmTarget = "21"
     }
 
+    signingConfigs {
+        create("sign") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.langferry.app"
         minSdk = flutter.minSdkVersion
@@ -28,15 +47,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: 发布前创建 release keystore 并配置签名
-            // 1. 运行: keytool -genkey -v -keystore release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000
-            // 2. 创建 android/key.properties 文件:
-            //    storeFile=../release.keystore
-            //    storePassword=你的密码
-            //    keyAlias=release
-            //    keyPassword=你的密码
-            // 3. 取消下方注释并使用 signingConfigs.release
-            // signingConfig = signingConfigs.release
+            signingConfig = signingConfigs.getByName("sign")
         }
     }
 }

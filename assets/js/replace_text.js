@@ -81,7 +81,7 @@
             replacedCount++;
         });
         
-        console.log('[WebLingo] 已替换 ' + replacedCount + ' 个文本节点');
+        console.log('[LangFerry] 已替换 ' + replacedCount + ' 个文本节点');
         return replacedCount;
     }
     
@@ -104,7 +104,7 @@
             }
         });
         
-        console.log('[WebLingo] 已切换到原文模式，共 ' + count + ' 个节点');
+        console.log('[LangFerry] 已切换到原文模式，共 ' + count + ' 个节点');
         return count;
     }
     
@@ -127,7 +127,7 @@
             }
         });
         
-        console.log('[WebLingo] 已切换到译文模式，共 ' + count + ' 个节点');
+        console.log('[LangFerry] 已切换到译文模式，共 ' + count + ' 个节点');
         return count;
     }
     
@@ -171,7 +171,7 @@
             }
         });
         
-        console.log('[WebLingo] 已切换到对照模式，共 ' + count + ' 个节点');
+        console.log('[LangFerry] 已切换到对照模式，共 ' + count + ' 个节点');
         return count;
     }
     
@@ -197,7 +197,7 @@
             count++;
         });
         
-        console.log('[WebLingo] 已清除 ' + count + ' 个节点的翻译');
+        console.log('[LangFerry] 已清除 ' + count + ' 个节点的翻译');
         return count;
     }
     
@@ -248,5 +248,5 @@
     window.getCurrentMode = getCurrentMode;
     window.getTranslationStats = getTranslationStats;
     
-    console.log('[WebLingo] 文本替换脚本已加载 v2');
+    console.log('[LangFerry] 文本替换脚本已加载 v2');
 })();

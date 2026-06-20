@@ -85,7 +85,7 @@ class LogService {
   Future<void> init() async {
     if (_initialized) return;
     final dir = await getApplicationDocumentsDirectory();
-    _logFilePath = '${dir.path}/weblingo_debug.log';
+    _logFilePath = '${dir.path}/langferry_debug.log';
     _logFile = File(_logFilePath);
     _initialized = true;
 
@@ -144,12 +144,12 @@ class LogService {
       final buffer = _buffer.map((e) => e.formatted).join('\n');
       final exportFile = File('${_logFilePath}.export');
       await exportFile.writeAsString(
-        '=== WebLingo Debug Log ===\n'
+        '=== 文渡 LangFerry Debug Log ===\n'
         '=== 注意：敏感信息已自动脱敏（API Key/Token/邮箱/URL参数）===\n'
         '=== 导出时间：${DateTime.now().toIso8601String()} ===\n\n'
         '$buffer'
       );
-      await Share.shareXFiles([XFile(exportFile.path)], text: 'WebLingo 调试日志（已脱敏）');
+      await Share.shareXFiles([XFile(exportFile.path)], text: '文渡 调试日志（已脱敏）');
     } catch (e) {
       error('LogService', '导出日志失败: $e');
     }
