@@ -232,6 +232,37 @@ class PaddleOcrNotifier extends StateNotifier<String> {
   }
 }
 
+// ==================== 自动 OCR ====================
+
+final autoOcrProvider = StateNotifierProvider<AutoOcrNotifier, bool>(
+  (ref) => AutoOcrNotifier(),
+);
+
+class AutoOcrNotifier extends StateNotifier<bool> {
+  AutoOcrNotifier() : super(_loadSaved()) {
+    addListener((_) => _save(state));
+  }
+
+  static bool _loadSaved() {
+    try {
+      final box = Hive.box('settings');
+      return box.get('auto_ocr', defaultValue: false);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  void _save(bool value) {
+    try {
+      final box = Hive.box('settings');
+      box.put('auto_ocr', value);
+    } catch (e) {}
+  }
+
+  void toggle() => state = !state;
+  void set(bool value) => state = value;
+}
+
 // ==================== 自动翻译 ====================
 
 /// 自动翻译开关提供者

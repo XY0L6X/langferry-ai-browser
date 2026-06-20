@@ -661,6 +661,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
         desktopMode: _desktopMode,
         autoTranslate: autoOn,
         incognitoMode: _incognitoMode,
+        autoOcr: ref.read(autoOcrProvider),
         onCopyUrl: () {
           Clipboard.setData(ClipboardData(text: _currentUrl));
           Navigator.pop(ctx);
@@ -694,6 +695,11 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
         onIncognito: () {
           Navigator.pop(ctx);
           setState(() => _incognitoMode = !_incognitoMode);
+        },
+        onAutoOcr: () {
+          Navigator.pop(ctx);
+          ref.read(autoOcrProvider.notifier).toggle();
+          setState(() {});
         },
         onExportTxt: () => _exportTranslation(),
       ),
@@ -1092,6 +1098,8 @@ class _UnifiedMenuSheet extends StatelessWidget {
   final VoidCallback onAutoTranslate;
   final VoidCallback onIncognito;
   final VoidCallback? onExportTxt;
+  final VoidCallback onAutoOcr;
+  final bool autoOcr;
 
   const _UnifiedMenuSheet({
     required this.currentUrl,
@@ -1106,6 +1114,8 @@ class _UnifiedMenuSheet extends StatelessWidget {
     required this.onDesktopMode,
     required this.onAutoTranslate,
     required this.onIncognito,
+    required this.onAutoOcr,
+    required this.autoOcr,
     this.onExportTxt,
   });
 
@@ -1177,6 +1187,16 @@ class _UnifiedMenuSheet extends StatelessWidget {
             subtitle: const Text('不记录历史、不保存缓存'),
             value: incognitoMode,
             onChanged: (_) => onIncognito(),
+          ),
+          SwitchListTile(
+            secondary: Icon(
+              autoOcr ? Icons.document_scanner : Icons.document_scanner_outlined,
+              color: autoOcr ? theme.colorScheme.tertiary : null,
+            ),
+            title: const Text('文档 OCR 翻译'),
+            subtitle: const Text('打开PDF/文档时自动识别并翻译'),
+            value: autoOcr,
+            onChanged: (_) => onAutoOcr(),
           ),
           const SizedBox(height: AppDimens.spacing8),
         ],
