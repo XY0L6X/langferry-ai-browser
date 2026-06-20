@@ -561,39 +561,62 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   void _setPaddleOcrToken() {
     final token = ref.read(paddleOcrTokenProvider);
+    final model = ref.read(paddleOcrModelProvider);
     final controller = TextEditingController(text: token);
+    String selectedModel = model;
+    
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('PaddleOCR API 密钥'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('获取地址: paddleocr.aistudio-app.com',
-                style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 8),
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: '输入 Access Token',
-                border: OutlineInputBorder(),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('PaddleOCR API 配置'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('获取地址: paddleocr.aistudio-app.com',
+                  style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: 'Access Token',
+                  hintText: '输入 Access Token',
+                  border: OutlineInputBorder(),
+                ),
               ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: selectedModel,
+                decoration: const InputDecoration(
+                  labelText: '识别模型',
+                  border: OutlineInputBorder(),
+                ),
+                items: PaddleOcrModelNotifier.availableModels.map((m) {
+                  return DropdownMenuItem(value: m, child: Text(m));
+                }).toList(),
+                onChanged: (v) {
+                  if (v != null) {
+                    setDialogState(() => selectedModel = v);
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+            FilledButton(
+              onPressed: () {
+                ref.read(paddleOcrTokenProvider.notifier).setToken(controller.text);
+                ref.read(paddleOcrModelProvider.notifier).setModel(selectedModel);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(content: Text('PaddleOCR 配置已保存')),
+                );
+              },
+              child: const Text('保存'),
             ),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
-          FilledButton(
-            onPressed: () {
-              ref.read(paddleOcrTokenProvider.notifier).setToken(controller.text);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(this.context).showSnackBar(
-                const SnackBar(content: Text('PaddleOCR 密钥已保存')),
-              );
-            },
-            child: const Text('保存'),
-          ),
-        ],
       ),
     );
   }

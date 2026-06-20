@@ -206,6 +206,10 @@ final paddleOcrTokenProvider = StateNotifierProvider<PaddleOcrNotifier, String>(
   (ref) => PaddleOcrNotifier(),
 );
 
+final paddleOcrModelProvider = StateNotifierProvider<PaddleOcrModelNotifier, String>(
+  (ref) => PaddleOcrModelNotifier(),
+);
+
 class PaddleOcrNotifier extends StateNotifier<String> {
   PaddleOcrNotifier() : super(_loadSaved()) {
     addListener((_) => _save(state));
@@ -230,6 +234,39 @@ class PaddleOcrNotifier extends StateNotifier<String> {
   void setToken(String token) {
     state = token;
   }
+}
+
+/// PaddleOCR 模型选择
+class PaddleOcrModelNotifier extends StateNotifier<String> {
+  PaddleOcrModelNotifier() : super(_loadSaved()) {
+    addListener((_) => _save(state));
+  }
+
+  static String _loadSaved() {
+    try {
+      final box = Hive.box('settings');
+      return box.get('paddleocr_model', defaultValue: 'PaddleOCR-VL-1.6');
+    } catch (e) {
+      return 'PaddleOCR-VL-1.6';
+    }
+  }
+
+  void _save(String value) {
+    try {
+      final box = Hive.box('settings');
+      box.put('paddleocr_model', value);
+    } catch (e) {}
+  }
+
+  void setModel(String model) {
+    state = model;
+  }
+
+  static const List<String> availableModels = [
+    'PaddleOCR-VL-1.6',
+    'PP-OCRv6',
+    'PP-StructureV3',
+  ];
 }
 
 // ==================== 自动 OCR ====================

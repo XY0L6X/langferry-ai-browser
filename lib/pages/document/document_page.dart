@@ -46,7 +46,9 @@ class _DocumentPageState extends ConsumerState<DocumentPage> {
 
   void _loadToken() {
     final token = ref.read(paddleOcrTokenProvider);
+    final model = ref.read(paddleOcrModelProvider);
     _ocrService.setToken(token);
+    _ocrService.setModel(model);
   }
 
   Future<void> _pickFile() async {

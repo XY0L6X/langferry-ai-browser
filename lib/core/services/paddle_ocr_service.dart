@@ -41,14 +41,15 @@ class OcrPage {
 /// PaddleOCR API 服务
 class PaddleOcrService {
   static const String _baseUrl = 'https://paddleocr.aistudio-app.com/api/v2/ocr/jobs';
-  static const String _model = 'PaddleOCR-VL-1.6';
 
   final Dio _dio;
   String _token = '';
+  String _model = 'PaddleOCR-VL-1.6';
 
   PaddleOcrService() : _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 30)));
 
   void setToken(String token) => _token = token;
+  void setModel(String model) => _model = model;
 
   Map<String, String> get _headers => {
         'Authorization': 'bearer $_token',
