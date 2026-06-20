@@ -663,8 +663,6 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               onSubmit: _onUrlSubmitted,
               onMenuPressed: _showUnifiedMenu,
               onTabPressed: _showTabManager,
-              onMorePressed: _showUnifiedMenu,
-              onFavoritePressed: _showUnifiedMenu,
               onClearPressed: _goToHomePage,
               tabCount: _tabs.length,
             ),
@@ -842,6 +840,12 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               _BottomBarButton(
                 icon: Icons.refresh,
                 onTap: _refresh,
+              ),
+              _AutoTranslateToggle(
+                onToggle: () {
+                  ref.read(autoTranslateProvider.notifier).toggle();
+                  setState(() {});
+                },
               ),
               TranslateButton(
                 state: _translateState,

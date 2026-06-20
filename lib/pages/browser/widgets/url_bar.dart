@@ -11,8 +11,6 @@ class UrlBar extends StatelessWidget {
   final ValueChanged<String> onSubmit;
   final VoidCallback onMenuPressed;
   final VoidCallback onTabPressed;
-  final VoidCallback onMorePressed;
-  final VoidCallback onFavoritePressed;
   final VoidCallback onClearPressed;
   final int tabCount;
 
@@ -25,8 +23,6 @@ class UrlBar extends StatelessWidget {
     required this.onSubmit,
     required this.onMenuPressed,
     required this.onTabPressed,
-    required this.onMorePressed,
-    required this.onFavoritePressed,
     required this.onClearPressed,
     required this.tabCount,
   });
@@ -124,22 +120,10 @@ class UrlBar extends StatelessWidget {
                   ),
                 ),
                 
-                // 收藏按钮
-                _IconButton(
-                  icon: Icons.favorite_border,
-                  onTap: onFavoritePressed,
-                ),
-                
                 // 标签页按钮
                 _TabCountButton(
                   count: tabCount,
                   onPressed: onTabPressed,
-                ),
-                
-                // 更多按钮
-                _IconButton(
-                  icon: Icons.more_vert,
-                  onTap: onMorePressed,
                 ),
               ],
             ),
