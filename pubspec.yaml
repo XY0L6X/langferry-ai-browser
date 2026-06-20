@@ -1,7 +1,7 @@
 name: langferry
 description: 文渡 LangFerry - AI 翻译浏览器，以文字为舟渡语言之河
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.2.0+2
 
 environment:
   sdk: '>=3.2.0 <4.0.0'

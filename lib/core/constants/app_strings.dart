@@ -5,7 +5,7 @@ class AppStrings {
   
   // ==================== 应用信息 ====================
   static const String appName = '文渡';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.2.0';
   static const String appDescription = 'AI翻译浏览器';
   
   // ==================== 导航栏 ====================
