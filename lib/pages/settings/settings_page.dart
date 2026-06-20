@@ -10,6 +10,7 @@ import '../../core/services/log_service.dart';
 import '../debug/debug_console_page.dart';
 import 'widgets/api_config_page.dart';
 import 'usage_ledger_page.dart';
+import '../document/document_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -175,6 +176,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 subtitle: const Text('查看 API 翻译费用记录'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UsageLedgerPage())),
+              ),
+              ListTile(
+                leading: const Icon(Icons.article),
+                title: const Text('文档翻译'),
+                subtitle: const Text('PDF/图片 OCR 识别并翻译'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentPage())),
               ),
               ListTile(
                 leading: const Icon(Icons.save_alt),
