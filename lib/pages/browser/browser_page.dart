@@ -612,6 +612,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     final autoOn = ref.read(autoTranslateProvider);
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => _UnifiedMenuSheet(
         currentUrl: _currentUrl,
         currentTitle: _currentTitle,
@@ -1068,7 +1069,8 @@ class _UnifiedMenuSheet extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppDimens.spacing16),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // 页面操作
@@ -1123,6 +1125,7 @@ class _UnifiedMenuSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppDimens.spacing8),
         ],
+      ),
       ),
     );
   }
