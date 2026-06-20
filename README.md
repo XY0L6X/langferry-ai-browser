@@ -25,7 +25,7 @@
 
 ### 安装
 
-从 [Releases](https://github.com/your/repo/releases) 下载最新 APK，传到手机上安装即可。
+从 [Releases](https://github.com/XY0L6X/langferry-ai-browser/releases) 下载最新 APK，传到手机上安装即可。
 
 > 如提示"未知来源"，在设置中允许"安装未知应用"。
 
@@ -45,7 +45,7 @@
 
 ```bash
 # 需要 Flutter 3.22+ / Dart 3.2+
-git clone https://github.com/your/repo.git
+git clone https://github.com/XY0L6X/langferry-ai-browser.git
 cd langferry
 flutter pub get
 flutter run                # 连接设备运行
