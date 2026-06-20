@@ -826,6 +826,10 @@ class _UsageGuidePage extends StatelessWidget {
             _numberedItem(theme, '5', '点击"测试连接"，看到 ✅ 连接成功 就对了'),
             _numberedItem(theme, '6', '点击右上角"保存"'),
             _tip(theme, '如果测试失败：检查 Key 是否复制完整、网络是否正常。API Key 就像银行卡密码，不要随意分享给他人。'),
+            const SizedBox(height: 12),
+            _subsectionTitle(theme, '如果要用文档翻译（PDF/图片）'),
+            _body(theme, '还需额外配置 PaddleOCR 密钥：设置 → PaddleOCR API 密钥 → 输入 Token → 选择识别模型。'),
+            _tip(theme, '翻译网页只需翻译 API，翻译文档才需要 PaddleOCR。两者互不影响。'),
 
             const SizedBox(height: 28),
             _sectionTitle(theme, '🌐 浏览器功能'),
@@ -847,6 +851,17 @@ class _UsageGuidePage extends StatelessWidget {
             _bullet(theme, '重新翻译 — 重新提取页面文本再翻译（适合点开"展开"加载更多内容后使用）'),
             _subsectionTitle(theme, '划词翻译'),
             _body(theme, '长按网页中任意外文文字并选中，底部会自动弹出翻译结果，支持复制和收藏。'),
+
+            const SizedBox(height: 28),
+            _sectionTitle(theme, '📄 文档翻译（PDF/图片 OCR）'),
+            _body(theme, '可将 PDF、Word、图片等文档识别并翻译。'
+                '文档翻译需要同时配置两种 API 密钥：'),
+            _bullet(theme, '🌐 翻译 API — 设置 → API 配置（DeepSeek 等）'),
+            _bullet(theme, '📷 PaddleOCR — 设置 → PaddleOCR API 密钥（负责文字识别）'),
+            const SizedBox(height: 8),
+            _tip(theme, '简单来说：PaddleOCR 相当于"眼睛"负责从文档中提取文字，翻译 API 相当于"大脑"负责把文字译成中文，两者缺一不可。'),
+            _body(theme, '配置完成后，在 设置 → 文档翻译 中选择文件，'
+                '点击开始即可自动识别并逐段翻译，右上角可导出双语对照 TXT。'),
 
             const SizedBox(height: 28),
             _sectionTitle(theme, '⬇️ 下载管理'),

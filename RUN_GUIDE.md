@@ -59,6 +59,17 @@
 
 > 💡 **提示**：API Key 就像银行卡密码，不要随意分享给他人。
 
+### 2.4 配置文档翻译（可选，仅翻译 PDF/图片时需要）
+
+文档翻译功能需要额外的 PaddleOCR 密钥来识别文档中的文字：
+
+1. 打开 文渡 → 设置 → **PaddleOCR API 密钥**
+2. 输入你的 Access Token（从 [paddleocr.aistudio-app.com](https://paddleocr.aistudio-app.com) 获取）
+3. 选择识别模型（推荐 PaddleOCR-VL-1.6）
+4. 点击保存
+
+> 📄 **两种 API 的区别**：翻译 API 负责"翻译"（把外文变成中文），PaddleOCR 负责"识别"（从 PDF/图片中提取文字）。翻译网页只需翻译 API，翻译文档才需要 PaddleOCR。
+
 ---
 
 ## 3. 使用浏览器
