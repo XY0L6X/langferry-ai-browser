@@ -13,7 +13,6 @@ class UrlBar extends StatelessWidget {
   final VoidCallback onTabPressed;
   final VoidCallback onClearPressed;
   final int tabCount;
-  final String searchEngineIcon;
 
   const UrlBar({
     super.key,
@@ -26,7 +25,6 @@ class UrlBar extends StatelessWidget {
     required this.onTabPressed,
     required this.onClearPressed,
     required this.tabCount,
-    this.searchEngineIcon = '',
   });
 
   @override
@@ -67,35 +65,29 @@ class UrlBar extends StatelessWidget {
                       horizontal: AppDimens.spacing8,
                     ),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                      color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(AppDimens.radiusButton),
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.2),
+                        color: theme.colorScheme.outline.withOpacity(0.15),
                       ),
                     ),
                     child: Row(
                       children: [
-                        // 搜索引擎图标
-                        Padding(
-                          padding: const EdgeInsets.only(left: AppDimens.spacing12),
-                          child: Text(
-                            searchEngineIcon.isNotEmpty ? searchEngineIcon : '🌐',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        
                         // URL输入框
                         Expanded(
                           child: TextField(
                             controller: controller,
                             focusNode: focusNode,
                             style: theme.textTheme.bodyMedium,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: AppStrings.urlHint,
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurface.withOpacity(0.35),
+                              ),
                               border: InputBorder.none,
                               filled: false,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: AppDimens.spacing8,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: AppDimens.spacing12,
                                 vertical: 0,
                               ),
                             ),
@@ -112,9 +104,10 @@ class UrlBar extends StatelessWidget {
                               controller.clear();
                               onClearPressed();
                             },
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.close,
                               size: AppDimens.iconSizeSmall,
+                              color: theme.colorScheme.onSurface.withOpacity(0.4),
                             ),
                           ),
                       ],
