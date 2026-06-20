@@ -76,46 +76,44 @@ class DownloadService extends ChangeNotifier {
   /// 获取下载目录
   Future<String> getDownloadPath() async {
     if (_downloadPath.isNotEmpty) return _downloadPath;
+
+    // 优先级: 公共下载 > 外部存储 > 内部文档
+    final candidates = <String>[];
     
     if (Platform.isAndroid) {
-      // 优先尝试公共下载目录
-      final publicDownload = '/storage/emulated/0/Download/LangFerry';
-      try {
-        final dir = Directory(publicDownload);
-        if (!await dir.exists()) {
-          await dir.create(recursive: true);
-        }
-        // 验证可写
-        final testFile = File('${dir.path}/.write_test');
-        await testFile.writeAsString('test');
-        await testFile.delete();
-        _downloadPath = publicDownload;
-        return _downloadPath;
-      } catch (_) {
-        // 公共目录不可写，回退到应用外部存储目录
-      }
-      
-      // 回退：应用外部存储目录（Android/data/...）
+      candidates.add('/storage/emulated/0/Download/LangFerry');
       try {
         final extDir = await getExternalStorageDirectory();
         if (extDir != null) {
-          _downloadPath = '${extDir.path}/Downloads';
+          candidates.add('${extDir.path}/Downloads');
         }
       } catch (_) {}
     }
     
-    // 最终回退：应用文档目录
-    if (_downloadPath.isEmpty) {
-      final appDir = await getApplicationDocumentsDirectory();
-      _downloadPath = '${appDir.path}/Downloads';
+    // 最后回退: 应用文档目录
+    final appDir = await getApplicationDocumentsDirectory();
+    candidates.add('${appDir.path}/Downloads');
+
+    for (final path in candidates) {
+      try {
+        final dir = Directory(path);
+        if (!await dir.exists()) {
+          await dir.create(recursive: true);
+        }
+        final testFile = File('${dir.path}/.write_test');
+        await testFile.writeAsString('test');
+        await testFile.delete();
+        _downloadPath = path;
+        return _downloadPath;
+      } catch (_) {
+        // 此路径不可写，尝试下一个
+      }
     }
-    
-    // 确保目录存在
+
+    // 极端回退
+    _downloadPath = '${appDir.path}/Downloads';
     final dir = Directory(_downloadPath);
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-    
+    if (!await dir.exists()) await dir.create(recursive: true);
     return _downloadPath;
   }
   
