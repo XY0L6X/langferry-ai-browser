@@ -14,6 +14,7 @@ class UrlBar extends StatelessWidget {
   final VoidCallback onClearPressed;
   final int tabCount;
   final String? searchIcon;
+  final bool incognito;
 
   const UrlBar({
     super.key,
@@ -27,6 +28,7 @@ class UrlBar extends StatelessWidget {
     required this.onClearPressed,
     required this.tabCount,
     this.searchIcon,
+    this.incognito = false,
   });
 
   @override
@@ -35,10 +37,10 @@ class UrlBar extends StatelessWidget {
     
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: incognito ? Colors.grey[900] : theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: incognito ? Colors.grey[700]! : theme.colorScheme.outline.withOpacity(0.2),
           ),
         ),
       ),

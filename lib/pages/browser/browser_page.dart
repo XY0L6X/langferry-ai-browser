@@ -61,6 +61,9 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
   
   // 桌面模式
   bool _desktopMode = false;
+  
+  // 无痕模式
+  bool _incognitoMode = false;
 
   @override
   void initState() {
@@ -236,6 +239,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
   }
 
   void _saveToHistory(String url, String title) {
+    if (_incognitoMode) return; // 无痕模式不记录
     if (url.isEmpty || url == 'about:blank') return;
     final record = TranslationRecord(
       id: '${DateTime.now().microsecondsSinceEpoch}_${url.hashCode}',
@@ -613,6 +617,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
         currentTitle: _currentTitle,
         desktopMode: _desktopMode,
         autoTranslate: autoOn,
+        incognitoMode: _incognitoMode,
         onCopyUrl: () {
           Clipboard.setData(ClipboardData(text: _currentUrl));
           Navigator.pop(ctx);
@@ -643,6 +648,10 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
           ref.read(autoTranslateProvider.notifier).toggle();
           setState(() {});
         },
+        onIncognito: () {
+          Navigator.pop(ctx);
+          setState(() => _incognitoMode = !_incognitoMode);
+        },
       ),
     );
   }
@@ -655,6 +664,13 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       body: SafeArea(
         child: Column(
           children: [
+            // 无痕模式指示条
+            if (_incognitoMode)
+              Container(
+                width: double.infinity,
+                height: 3,
+                color: Colors.grey[900],
+              ),
             UrlBar(
               controller: _urlController,
               focusNode: _urlFocusNode,
@@ -666,6 +682,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               onClearPressed: _goToHomePage,
               tabCount: _tabs.length,
               searchIcon: SearchEngine.findById(ref.watch(searchEngineProvider)).icon,
+              incognito: _incognitoMode,
             ),
             if (_tabs.length > 1)
               TabBarWidget(
@@ -1022,24 +1039,28 @@ class _UnifiedMenuSheet extends StatelessWidget {
   final String currentTitle;
   final bool desktopMode;
   final bool autoTranslate;
+  final bool incognitoMode;
   final VoidCallback onCopyUrl;
   final VoidCallback onShare;
   final VoidCallback onFavorite;
   final VoidCallback onFindInPage;
   final VoidCallback onDesktopMode;
   final VoidCallback onAutoTranslate;
+  final VoidCallback onIncognito;
 
   const _UnifiedMenuSheet({
     required this.currentUrl,
     required this.currentTitle,
     required this.desktopMode,
     required this.autoTranslate,
+    required this.incognitoMode,
     required this.onCopyUrl,
     required this.onShare,
     required this.onFavorite,
     required this.onFindInPage,
     required this.onDesktopMode,
     required this.onAutoTranslate,
+    required this.onIncognito,
   });
 
   @override
@@ -1088,6 +1109,17 @@ class _UnifiedMenuSheet extends StatelessWidget {
             subtitle: const Text('加载外文页面时自动翻译'),
             value: autoTranslate,
             onChanged: (_) => onAutoTranslate(),
+          ),
+          const Divider(),
+          SwitchListTile(
+            secondary: Icon(
+              incognitoMode ? Icons.visibility_off : Icons.visibility,
+              color: incognitoMode ? theme.colorScheme.error : null,
+            ),
+            title: const Text('无痕模式'),
+            subtitle: const Text('不记录历史、不保存缓存'),
+            value: incognitoMode,
+            onChanged: (_) => onIncognito(),
           ),
           const SizedBox(height: AppDimens.spacing8),
         ],
