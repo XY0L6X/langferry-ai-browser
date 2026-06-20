@@ -47,7 +47,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
   int _currentTabIndex = 0;
 
   InAppWebViewController? _webViewController;
-  late TranslationCoordinator _coordinator;
+  TranslationCoordinator? _coordinator;
   TranslationMode _translationMode = TranslationMode.translated;
   JsInjectionService? _jsService;
   bool _jsReady = false;  // JS 注入完成标志
@@ -196,7 +196,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     // 先更新 URL（旧翻译的 onDone 检查 _translatingUrl != _currentUrl 会安全跳过）
     _currentUrl = url;
     _translatingUrl = null; // 废弃旧翻译回调
-    _coordinator.cancel(); // 取消正在进行的翻译
+    _coordinator?.cancel(); // 取消正在进行的翻译
     setState(() {
       _pageState = BrowserPageState.loading;
       _urlController.text = url;
@@ -278,7 +278,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       if (canGoBack) {
         // 回退前重置翻译状态（belt-and-suspenders）
         _translatingUrl = null;
-        _coordinator.cancel();
+        _coordinator?.cancel();
         setState(() {
           _translateState = TranslateButtonState.idle;
           _translationMode = TranslationMode.translated;
@@ -295,7 +295,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       final canGoForward = await _webViewController!.canGoForward();
       if (canGoForward) {
         _translatingUrl = null;
-        _coordinator.cancel();
+        _coordinator?.cancel();
         setState(() {
           _translateState = TranslateButtonState.idle;
           _translationMode = TranslationMode.translated;
@@ -309,7 +309,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
 
   void _refresh() {
     _translatingUrl = null;
-    _coordinator.cancel();
+    _coordinator?.cancel();
     setState(() {
       _translateState = TranslateButtonState.idle;
       _translationMode = TranslationMode.translated;
@@ -456,7 +456,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     // 记录最后一个进度事件，用于 onDone 判断是否真正成功
     TranslationProgress? lastProgress;
 
-    _coordinator.translatePage(targetLanguage: 'zh-CN').listen(
+    _coordinator?.translatePage(targetLanguage: 'zh-CN').listen(
       (progress) {
         // 仅当仍在同一页面时更新状态
         if (_translatingUrl != _currentUrl) return;
@@ -520,7 +520,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
           setState(() {
             _translationMode = mode;
           });
-          await _coordinator.setDisplayMode(mode);
+          await _coordinator?.setDisplayMode(mode);
           Navigator.pop(context);
         },
         onRetranslate: () {

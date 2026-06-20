@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../core/constants/app_dimens.dart';
 import 'app_colors.dart';
 
@@ -64,7 +63,7 @@ class AppTheme {
         centerTitle: false,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        titleTextStyle: GoogleFonts.notoSansSc(
+        titleTextStyle: TextStyle(
           fontSize: AppDimens.fontSizeTitle,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
@@ -300,77 +299,77 @@ class AppTheme {
     final Color textColor = isLight ? AppColorsLight.textPrimary : AppColorsDark.textPrimary;
     
     return TextTheme(
-      displayLarge: GoogleFonts.notoSansSc(
+      displayLarge: TextStyle(
         fontSize: AppDimens.fontSizeDisplay,
         fontWeight: FontWeight.w400,
         color: textColor,
       ),
-      displayMedium: GoogleFonts.notoSansSc(
+      displayMedium: TextStyle(
         fontSize: AppDimens.fontSizeHeadline,
         fontWeight: FontWeight.w400,
         color: textColor,
       ),
-      displaySmall: GoogleFonts.notoSansSc(
+      displaySmall: TextStyle(
         fontSize: AppDimens.fontSizeTitle,
         fontWeight: FontWeight.w400,
         color: textColor,
       ),
-      headlineLarge: GoogleFonts.notoSansSc(
+      headlineLarge: TextStyle(
         fontSize: AppDimens.fontSizeHeadline,
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      headlineMedium: GoogleFonts.notoSansSc(
+      headlineMedium: TextStyle(
         fontSize: AppDimens.fontSizeTitle,
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      headlineSmall: GoogleFonts.notoSansSc(
+      headlineSmall: TextStyle(
         fontSize: AppDimens.fontSizeSubtitle,
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      titleLarge: GoogleFonts.notoSansSc(
+      titleLarge: TextStyle(
         fontSize: AppDimens.fontSizeTitle,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      titleMedium: GoogleFonts.notoSansSc(
+      titleMedium: TextStyle(
         fontSize: AppDimens.fontSizeSubtitle,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      titleSmall: GoogleFonts.notoSansSc(
+      titleSmall: TextStyle(
         fontSize: AppDimens.fontSizeBody,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      bodyLarge: GoogleFonts.notoSansSc(
+      bodyLarge: TextStyle(
         fontSize: AppDimens.fontSizeSubtitle,
         fontWeight: FontWeight.w400,
         color: textColor,
       ),
-      bodyMedium: GoogleFonts.notoSansSc(
+      bodyMedium: TextStyle(
         fontSize: AppDimens.fontSizeBody,
         fontWeight: FontWeight.w400,
         color: textColor,
       ),
-      bodySmall: GoogleFonts.notoSansSc(
+      bodySmall: TextStyle(
         fontSize: AppDimens.fontSizeCaption,
         fontWeight: FontWeight.w400,
         color: textColor.withOpacity(0.7),
       ),
-      labelLarge: GoogleFonts.notoSansSc(
+      labelLarge: TextStyle(
         fontSize: AppDimens.fontSizeBody,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      labelMedium: GoogleFonts.notoSansSc(
+      labelMedium: TextStyle(
         fontSize: AppDimens.fontSizeCaption,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      labelSmall: GoogleFonts.notoSansSc(
+      labelSmall: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         color: textColor,
