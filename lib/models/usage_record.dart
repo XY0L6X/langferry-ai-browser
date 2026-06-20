@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'usage_record.g.dart';
 
 /// 消费记录
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 class UsageRecord extends HiveObject {
   @HiveField(0)
   final String id;
