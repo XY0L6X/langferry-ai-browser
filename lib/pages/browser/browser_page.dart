@@ -597,9 +597,53 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
   }
 
   void _openDrawer() {
-    // 菜单按钮暂时不实现侧边栏
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('菜单功能开发中')),
+    _showUnifiedMenu();
+  }
+
+  void _showMoreOptions() {
+    _showUnifiedMenu();
+  }
+
+  void _showUnifiedMenu() {
+    final autoOn = ref.read(autoTranslateProvider);
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => _UnifiedMenuSheet(
+        currentUrl: _currentUrl,
+        currentTitle: _currentTitle,
+        desktopMode: _desktopMode,
+        autoTranslate: autoOn,
+        onCopyUrl: () {
+          Clipboard.setData(ClipboardData(text: _currentUrl));
+          Navigator.pop(ctx);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(AppStrings.copySuccess)),
+          );
+        },
+        onShare: () {
+          Navigator.pop(ctx);
+          if (_currentUrl.isNotEmpty) {
+            Share.share(_currentUrl, subject: _currentTitle);
+          }
+        },
+        onFavorite: () {
+          Navigator.pop(ctx);
+          _addToFavorite();
+        },
+        onFindInPage: () {
+          Navigator.pop(ctx);
+          setState(() => _showFindBar = true);
+        },
+        onDesktopMode: () {
+          Navigator.pop(ctx);
+          _toggleDesktopMode();
+        },
+        onAutoTranslate: () {
+          Navigator.pop(ctx);
+          ref.read(autoTranslateProvider.notifier).toggle();
+          setState(() {});
+        },
+      ),
     );
   }
 
@@ -617,10 +661,10 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               isLoading: _pageState == BrowserPageState.loading,
               loadProgress: _loadProgress,
               onSubmit: _onUrlSubmitted,
-              onMenuPressed: _openDrawer,
+              onMenuPressed: _showUnifiedMenu,
               onTabPressed: _showTabManager,
-              onMorePressed: _showMoreOptions,
-              onFavoritePressed: _addToFavorite,
+              onMorePressed: _showUnifiedMenu,
+              onFavoritePressed: _showUnifiedMenu,
               onClearPressed: _goToHomePage,
               tabCount: _tabs.length,
             ),
@@ -799,23 +843,6 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
                 icon: Icons.refresh,
                 onTap: _refresh,
               ),
-              // 自动翻译开关
-              _AutoTranslateToggle(
-                onToggle: () {
-                  ref.read(autoTranslateProvider.notifier).toggle();
-                  final isOn = ref.read(autoTranslateProvider);
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(isOn ? '自动翻译：已开启' : '自动翻译：已关闭'),
-                      duration: const Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.only(bottom: 70, left: 16, right: 16),
-                    ),
-                  );
-                  setState(() {});
-                },
-              ),
               TranslateButton(
                 state: _translateState,
                 onPressed: _onTranslatePressed,
@@ -847,34 +874,6 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     );
   }
 
-  void _showMoreOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => _MoreOptionsSheet(
-        onCopyUrl: () {
-          Clipboard.setData(ClipboardData(text: _currentUrl));
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(AppStrings.copySuccess)),
-          );
-        },
-        onShare: () {
-          Navigator.pop(context);
-          if (_currentUrl.isNotEmpty) {
-            Share.share(_currentUrl, subject: _currentTitle);
-          }
-        },
-        onFindInPage: () {
-          Navigator.pop(context);
-          setState(() => _showFindBar = true);
-        },
-        onDesktopMode: () {
-          Navigator.pop(context);
-          _toggleDesktopMode();
-        },
-      ),
-    );
-  }
 }
 
 class _BottomBarButton extends StatelessWidget {
@@ -1003,44 +1002,99 @@ class _TranslationModeSheet extends StatelessWidget {
   }
 }
 
-class _MoreOptionsSheet extends StatelessWidget {
+class _UnifiedMenuSheet extends StatelessWidget {
+  final String currentUrl;
+  final String currentTitle;
+  final bool desktopMode;
+  final bool autoTranslate;
   final VoidCallback onCopyUrl;
   final VoidCallback onShare;
+  final VoidCallback onFavorite;
   final VoidCallback onFindInPage;
   final VoidCallback onDesktopMode;
+  final VoidCallback onAutoTranslate;
 
-  const _MoreOptionsSheet({
+  const _UnifiedMenuSheet({
+    required this.currentUrl,
+    required this.currentTitle,
+    required this.desktopMode,
+    required this.autoTranslate,
     required this.onCopyUrl,
     required this.onShare,
+    required this.onFavorite,
     required this.onFindInPage,
     required this.onDesktopMode,
+    required this.onAutoTranslate,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppDimens.spacing16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // 页面操作
+          _SectionTitle(theme, '页面操作'),
           ListTile(
-              leading: const Icon(Icons.copy),
-              title: const Text('复制链接'),
-              onTap: onCopyUrl),
+            leading: const Icon(Icons.copy),
+            title: const Text('复制链接'),
+            onTap: onCopyUrl,
+          ),
           ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('分享'),
-              onTap: onShare),
+            leading: const Icon(Icons.share),
+            title: const Text('分享'),
+            onTap: onShare,
+          ),
           ListTile(
-              leading: const Icon(Icons.search),
-              title: const Text('页面内查找'),
-              onTap: onFindInPage),
+            leading: const Icon(Icons.favorite_border),
+            title: const Text('收藏当前页'),
+            onTap: onFavorite,
+          ),
+          const Divider(),
+          // 浏览工具
+          _SectionTitle(theme, '浏览工具'),
           ListTile(
-              leading: const Icon(Icons.desktop_windows),
-              title: const Text('桌面版网站'),
-              onTap: onDesktopMode),
+            leading: const Icon(Icons.search),
+            title: const Text('页面内查找'),
+            onTap: onFindInPage,
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.desktop_windows),
+            title: const Text('桌面版网站'),
+            value: desktopMode,
+            onChanged: (_) => onDesktopMode(),
+          ),
+          SwitchListTile(
+            secondary: Icon(autoTranslate ? Icons.auto_awesome : Icons.auto_awesome_outlined,
+                color: autoTranslate ? theme.colorScheme.primary : null),
+            title: const Text('自动翻译'),
+            subtitle: const Text('加载外文页面时自动翻译'),
+            value: autoTranslate,
+            onChanged: (_) => onAutoTranslate(),
+          ),
+          const SizedBox(height: AppDimens.spacing8),
         ],
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final ThemeData theme;
+  final String text;
+  const _SectionTitle(this.theme, this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
+      child: Text(text,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          )),
     );
   }
 }
