@@ -324,7 +324,7 @@ class TranslationService {
 
       // 如果 JSON 解析仍然失败，回退到分隔符模式
       if (translatedParts == null) {
-        translatedParts = response.translatedText.split('|||WEBLINGO_SEP|||');
+        translatedParts = response.translatedText.split('|||LANGFERRY_SEP|||');
       }
 
       for (var i = 0; i < items.length; i++) {
