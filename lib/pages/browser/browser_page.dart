@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_dimens.dart';
 import '../../core/constants/app_strings.dart';
@@ -326,7 +328,47 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     }
   }
 
-  /// 切换桌面版/移动版
+  /// 导出译文为 TXT
+  void _exportTranslation() async {
+    if (_jsService == null || _webViewController == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先打开并翻译一个页面')),
+      );
+      return;
+    }
+    try {
+      // 通过 JS 提取页面中所有译文
+      final result = await _webViewController!.evaluateJavascript(source: '''
+        (function() {
+          var parts = [];
+          var seen = new Set();
+          document.querySelectorAll('[data-wl-translated]').forEach(function(el) {
+            var text = el.getAttribute('data-wl-translated').trim();
+            if (text && !seen.has(text)) {
+              seen.add(text);
+              parts.push(text);
+            }
+          });
+          return parts.join('\\n\\n');
+        })();
+      ''');
+      final text = result?.toString() ?? '';
+      if (text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('未找到译文，请先翻译页面')),
+        );
+        return;
+      }
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/译文_${_currentTitle}_${DateTime.now().millisecondsSinceEpoch}.txt');
+      await file.writeAsString('标题: $_currentTitle\n来源: $_currentUrl\n\n$text');
+      await Share.shareXFiles([XFile(file.path)], text: '导出译文');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('导出失败: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+      );
+    }
+  }
   void _toggleDesktopMode() {
     setState(() {
       _desktopMode = !_desktopMode;
@@ -653,6 +695,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
           Navigator.pop(ctx);
           setState(() => _incognitoMode = !_incognitoMode);
         },
+        onExportTxt: () => _exportTranslation(),
       ),
     );
   }
@@ -1048,6 +1091,7 @@ class _UnifiedMenuSheet extends StatelessWidget {
   final VoidCallback onDesktopMode;
   final VoidCallback onAutoTranslate;
   final VoidCallback onIncognito;
+  final VoidCallback? onExportTxt;
 
   const _UnifiedMenuSheet({
     required this.currentUrl,
@@ -1062,6 +1106,7 @@ class _UnifiedMenuSheet extends StatelessWidget {
     required this.onDesktopMode,
     required this.onAutoTranslate,
     required this.onIncognito,
+    this.onExportTxt,
   });
 
   @override
@@ -1111,6 +1156,16 @@ class _UnifiedMenuSheet extends StatelessWidget {
             subtitle: const Text('加载外文页面时自动翻译'),
             value: autoTranslate,
             onChanged: (_) => onAutoTranslate(),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.save_alt),
+            title: const Text('导出译文'),
+            subtitle: const Text('保存当前页翻译为 TXT'),
+            onTap: () {
+              Navigator.pop(context);
+              onExportTxt?.call();
+            },
           ),
           const Divider(),
           SwitchListTile(
