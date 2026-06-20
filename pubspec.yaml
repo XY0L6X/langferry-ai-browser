@@ -37,6 +37,7 @@ dependencies:
   
   # 路径和分享
   path_provider: ^2.1.1
+  file_picker: ^8.0.0
   share_plus: ^7.2.1
   url_launcher: ^6.2.1
   permission_handler: ^11.0.0
