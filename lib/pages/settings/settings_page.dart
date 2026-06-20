@@ -177,6 +177,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UsageLedgerPage())),
               ),
               ListTile(
+                leading: const Icon(Icons.save_alt),
+                title: const Text('导出译文'),
+                subtitle: const Text('保存当前页翻译为 TXT'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('打开浏览页面后，点击菜单中的"导出译文"即可保存')),
+                  );
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.bug_report),
                 title: const Text('调试控制台'),
                 subtitle: const Text('查看日志、执行JS、状态监控'),

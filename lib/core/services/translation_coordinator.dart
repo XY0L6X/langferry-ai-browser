@@ -21,6 +21,7 @@ class TranslationProgress {
   final bool success;
   final int? totalNodes;
   final int? processedNodes;
+  final double? cost; // 本次翻译费用
 
   const TranslationProgress({
     required this.stage,
@@ -29,6 +30,7 @@ class TranslationProgress {
     this.success = true,
     this.totalNodes,
     this.processedNodes,
+    this.cost,
   });
 }
 
@@ -168,10 +170,11 @@ class TranslationCoordinator {
           progress: 1,
           success: true,
           message: failedCount > 0
-              ? '翻译完成（部分失败: $failedCount/$total）'
-              : '翻译完成',
+              ? '翻译完成（部分失败: $failedCount/$total）\n费用详情见设置→消费明细'
+              : '翻译完成\n费用详情见设置→消费明细',
           totalNodes: total,
           processedNodes: successCount,
+          cost: 0,
         ));
       }
     } catch (e) {
