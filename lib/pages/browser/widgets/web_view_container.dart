@@ -10,6 +10,7 @@ import '../../../core/services/download_service.dart';
 /// WebView容器组件
 class WebViewContainer extends StatefulWidget {
   final String url;
+  final bool desktopMode;
   final ValueChanged<String> onPageStarted;
   final Function(String url, String title) onPageFinished;
   final ValueChanged<double> onProgressChanged;
@@ -22,6 +23,7 @@ class WebViewContainer extends StatefulWidget {
   const WebViewContainer({
     super.key,
     required this.url,
+    this.desktopMode = false,
     required this.onPageStarted,
     required this.onPageFinished,
     required this.onProgressChanged,
@@ -151,6 +153,9 @@ class _WebViewContainerState extends State<WebViewContainer> {
             // 启用下载功能
             useOnLoadResource: true,
             useOnDownloadStart: true,
+            userAgent: widget.desktopMode
+                ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                : null,
           ),
           onWebViewCreated: (controller) {
             _webViewController = controller;

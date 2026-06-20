@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_dimens.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/services/js_injection_service.dart';
@@ -323,28 +324,19 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
 
   /// 切换桌面版/移动版
   void _toggleDesktopMode() {
-    _desktopMode = !_desktopMode;
-    setState(() {});
-    // 使用 WebView 内置方法设置 User-Agent
-    if (_webViewController != null) {
-      _webViewController!.evaluateJavascript(source: r"""
-        (function() {
-          var ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36';
-          Object.defineProperty(navigator, 'userAgent', {get: function() { return ua; }});
-          Object.defineProperty(navigator, 'platform', {get: function() { return 'Win32'; }});
-          Object.defineProperty(navigator, 'vendor', {get: function() { return 'Google Inc.'; }});
-        })();
-      """);
-      if (_desktopMode) {
-        _webViewController!.reload();
-      }
-    }
+    setState(() {
+      _desktopMode = !_desktopMode;
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(_desktopMode ? '已切换桌面版' : '已恢复移动版'),
+        content: Text(_desktopMode ? '已切换桌面版，重新加载中...' : '已恢复移动版，重新加载中...'),
         duration: const Duration(seconds: 1),
       ),
     );
+    // 重建 WebViewContainer 时会用新的 userAgent 加载
+    if (_webViewController != null) {
+      _webViewController!.reload();
+    }
   }
 
   /// 页内查找
@@ -661,6 +653,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       case BrowserPageState.loaded:
         return WebViewContainer(
           url: _currentUrl,
+          desktopMode: _desktopMode,
           onPageStarted: _onPageStarted,
           onPageFinished: _onPageFinished,
           onProgressChanged: _onProgressChanged,
@@ -865,7 +858,12 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
             const SnackBar(content: Text(AppStrings.copySuccess)),
           );
         },
-        onShare: () => Navigator.pop(context),
+        onShare: () {
+          Navigator.pop(context);
+          if (_currentUrl.isNotEmpty) {
+            Share.share(_currentUrl, subject: _currentTitle);
+          }
+        },
         onFindInPage: () {
           Navigator.pop(context);
           setState(() => _showFindBar = true);
