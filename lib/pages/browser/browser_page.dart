@@ -665,6 +665,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               onTabPressed: _showTabManager,
               onClearPressed: _goToHomePage,
               tabCount: _tabs.length,
+              searchEngineIcon: SearchEngine.findById(ref.watch(searchEngineProvider)).icon,
             ),
             if (_tabs.length > 1)
               TabBarWidget(
@@ -844,6 +845,16 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
               _AutoTranslateToggle(
                 onToggle: () {
                   ref.read(autoTranslateProvider.notifier).toggle();
+                  final isOn = ref.read(autoTranslateProvider);
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isOn ? '自动翻译：已开启' : '自动翻译：已关闭'),
+                      duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.only(bottom: 70, left: 16, right: 16),
+                    ),
+                  );
                   setState(() {});
                 },
               ),

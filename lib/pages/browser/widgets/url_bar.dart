@@ -13,6 +13,7 @@ class UrlBar extends StatelessWidget {
   final VoidCallback onTabPressed;
   final VoidCallback onClearPressed;
   final int tabCount;
+  final String searchEngineIcon;
 
   const UrlBar({
     super.key,
@@ -25,6 +26,7 @@ class UrlBar extends StatelessWidget {
     required this.onTabPressed,
     required this.onClearPressed,
     required this.tabCount,
+    this.searchEngineIcon = '',
   });
 
   @override
@@ -73,12 +75,12 @@ class UrlBar extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        // 网站图标
-                        const Padding(
-                          padding: EdgeInsets.only(left: AppDimens.spacing12),
-                          child: Icon(
-                            Icons.language,
-                            size: AppDimens.iconSizeSmall,
+                        // 搜索引擎图标
+                        Padding(
+                          padding: const EdgeInsets.only(left: AppDimens.spacing12),
+                          child: Text(
+                            searchEngineIcon.isNotEmpty ? searchEngineIcon : '🌐',
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                         
