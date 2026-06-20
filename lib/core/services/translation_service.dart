@@ -70,44 +70,57 @@ class TranslationService {
       }
     }
 
-    // 2. 获取激活的API配置
-    final config = _database.getActiveApiConfig();
-    if (config == null) {
-    if (kDebugMode) print('[TranslationService] 未找到激活的API配置');
-    if (kDebugMode) print('[TranslationService] 所有配置: ${_database.getAllApiConfigs().map((c) => '${c.name} (active: ${c.isActive})').toList()}');
+    // 2. 获取激活的API配置（主密钥），失败时自动切换备用
+    final allConfigs = _database.getAllApiConfigs();
+    final activeConfig = allConfigs.where((c) => c.isActive).firstOrNull;
+    
+    // 按优先级排序：主密钥 → 其他配置
+    final configsInOrder = <ApiConfig>[];
+    if (activeConfig != null) configsInOrder.add(activeConfig);
+    configsInOrder.addAll(allConfigs.where((c) => c != activeConfig));
+    
+    if (configsInOrder.isEmpty) {
       throw const TranslationException('未配置API，请先在设置中配置翻译API');
     }
     
-    if (kDebugMode) print('[TranslationService] 使用API: ${config.name}, model: ${config.model}');
-    if (kDebugMode) print('[TranslationService] endpoint: ${config.endpoint}');
+    String? lastError;
+    for (final config in configsInOrder) {
+      try {
+        if (kDebugMode) print('[TranslationService] 使用API: ${config.name}, model: ${config.model}');
+        if (kDebugMode) print('[TranslationService] endpoint: ${config.endpoint}');
 
-    // 3. 分段处理长文本
-    final segments = _splitText(text);
-    final translatedSegments = <String>[];
+        // 3. 分段处理长文本
+        final segments = _splitText(text);
+        final translatedSegments = <String>[];
 
-    for (final segment in segments) {
-      final response = await _apiClient.translate(
-        config: config,
-        text: segment,
-        targetLanguage: targetLanguage,
-        systemPrompt: systemPrompt,
-      );
-      translatedSegments.add(response.translatedText);
+        for (final segment in segments) {
+          final response = await _apiClient.translate(
+            config: config,
+            text: segment,
+            targetLanguage: targetLanguage,
+            systemPrompt: systemPrompt,
+          );
+          translatedSegments.add(response.translatedText);
+        }
+
+        // 4. 合并结果
+        final translatedText = translatedSegments.join('\n');
+
+        // 5. 保存缓存
+        if (useCache) {
+          final cacheKey = _generateCacheKey(text, targetLanguage);
+          await _database.saveTranslationCache(cacheKey, translatedText);
+        }
+
+        return TranslationResult(translatedText: translatedText, fromCache: false);
+      } catch (e) {
+        lastError = e.toString();
+        if (kDebugMode) print('[TranslationService] API "${config.name}" 失败，尝试下一个: $e');
+        // 继续尝试下一个配置
+      }
     }
-
-    // 4. 合并结果
-    final translatedText = translatedSegments.join('\n');
-
-    // 5. 保存缓存
-    if (useCache) {
-      final cacheKey = _generateCacheKey(text, targetLanguage);
-      await _database.saveTranslationCache(cacheKey, translatedText);
-    }
-
-    return TranslationResult(
-      translatedText: translatedText,
-      fromCache: false,
-    );
+    
+    throw TranslationException('所有API配置均失败: $lastError');
   }
 
   /// 翻译文本（流式）
@@ -162,10 +175,49 @@ class TranslationService {
     Function(List<TranslationItem> translations)? onBatchComplete,
     Function(int done, int total)? onProgress,
   }) async {
-    final config = _database.getActiveApiConfig();
-    if (config == null) {
+    final allConfigs = _database.getAllApiConfigs();
+    final activeConfig = allConfigs.where((c) => c.isActive).firstOrNull;
+    final configsInOrder = <ApiConfig>[];
+    if (activeConfig != null) configsInOrder.add(activeConfig);
+    configsInOrder.addAll(allConfigs.where((c) => c != activeConfig));
+    
+    if (configsInOrder.isEmpty) {
       throw const TranslationException('未配置API，请先在设置中配置翻译API');
     }
+
+    String? lastError;
+    for (final config in configsInOrder) {
+      try {
+        return await _translateWithConfig(
+          config: config,
+          textNodes: textNodes,
+          targetLanguage: targetLanguage,
+          systemPrompt: systemPrompt,
+          maxConcurrency: maxConcurrency,
+          maxBatchChars: maxBatchChars,
+          isCancelled: isCancelled,
+          onBatchComplete: onBatchComplete,
+          onProgress: onProgress,
+        );
+      } catch (e) {
+        lastError = e.toString();
+        if (kDebugMode) print('[TranslationService] API "${config.name}" 失败: $e');
+      }
+    }
+    throw TranslationException('所有API均失败: $lastError');
+  }
+
+  Future<List<NodeTranslationResult>> _translateWithConfig({
+    required ApiConfig config,
+    required List<TextNode> textNodes,
+    required String targetLanguage,
+    String? systemPrompt,
+    int maxConcurrency = 4,
+    int maxBatchChars = 2000,
+    bool Function()? isCancelled,
+    Function(List<TranslationItem> translations)? onBatchComplete,
+    Function(int done, int total)? onProgress,
+  }) async {
 
     // 1. 分离缓存命中和未缓存
     final results = List<NodeTranslationResult?>.filled(textNodes.length, null);
