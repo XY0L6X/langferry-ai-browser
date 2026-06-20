@@ -185,6 +185,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentPage())),
               ),
               ListTile(
+                leading: const Icon(Icons.key),
+                title: const Text('PaddleOCR API 密钥'),
+                subtitle: const Text('配置文档识别的访问令牌'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _setPaddleOcrToken,
+              ),
+              ListTile(
                 leading: const Icon(Icons.save_alt),
                 title: const Text('导出译文'),
                 subtitle: const Text('保存当前页翻译为 TXT'),
@@ -548,6 +555,45 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const DebugConsolePage(),
+      ),
+    );
+  }
+
+  void _setPaddleOcrToken() {
+    final token = ref.read(paddleOcrTokenProvider);
+    final controller = TextEditingController(text: token);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('PaddleOCR API 密钥'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('获取地址: paddleocr.aistudio-app.com',
+                style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: '输入 Access Token',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+          FilledButton(
+            onPressed: () {
+              ref.read(paddleOcrTokenProvider.notifier).setToken(controller.text);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(this.context).showSnackBar(
+                const SnackBar(content: Text('PaddleOCR 密钥已保存')),
+              );
+            },
+            child: const Text('保存'),
+          ),
+        ],
       ),
     );
   }

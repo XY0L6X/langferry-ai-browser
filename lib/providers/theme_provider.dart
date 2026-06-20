@@ -200,6 +200,38 @@ class SearchEngineNotifier extends StateNotifier<String> {
   }
 }
 
+// ==================== PaddleOCR ====================
+
+final paddleOcrTokenProvider = StateNotifierProvider<PaddleOcrNotifier, String>(
+  (ref) => PaddleOcrNotifier(),
+);
+
+class PaddleOcrNotifier extends StateNotifier<String> {
+  PaddleOcrNotifier() : super(_loadSaved()) {
+    addListener((_) => _save(state));
+  }
+
+  static String _loadSaved() {
+    try {
+      final box = Hive.box('settings');
+      return box.get('paddleocr_token', defaultValue: '');
+    } catch (e) {
+      return '';
+    }
+  }
+
+  void _save(String value) {
+    try {
+      final box = Hive.box('settings');
+      box.put('paddleocr_token', value);
+    } catch (e) {}
+  }
+
+  void setToken(String token) {
+    state = token;
+  }
+}
+
 // ==================== 自动翻译 ====================
 
 /// 自动翻译开关提供者

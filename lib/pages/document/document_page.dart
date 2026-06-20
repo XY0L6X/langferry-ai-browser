@@ -6,6 +6,7 @@ import '../../core/services/paddle_ocr_service.dart';
 import '../../core/services/translation_service.dart';
 import '../../providers/translation_provider.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/theme_provider.dart';
 
 /// 文档翻译页面
 class DocumentPage extends ConsumerStatefulWidget {
@@ -34,8 +35,9 @@ class _DocumentPageState extends ConsumerState<DocumentPage> {
   }
 
   void _loadToken() {
-    final config = ref.read(activeApiConfigProvider);
-    _ocrService.setToken(config?.apiKey ?? '');
+    final token = ref.read(paddleOcrTokenProvider);
+    _ocrService.setToken(token);
+    _tokenController.text = token;
   }
 
   Future<void> _startOcr() async {
